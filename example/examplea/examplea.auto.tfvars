@@ -1,10 +1,10 @@
 common_tags = {
 "createdby" = "Terraform" }
-bucket_name = "helm-charts-authentic"
-project     = "authentic-dev"
+bucket_name = "helm-charts"
+project     = "examplea"
 binding = {
   role    = "roles/storage.objectViewer"
-  members = ["user:jw250550@ncr.com"]
+  members = ["user:user@example.com"]
 }
 
 location = "US"
