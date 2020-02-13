@@ -1,6 +1,6 @@
 [![Slalom][logo]](https://slalom.com)
 
-# terraform-gcp-helm [![Build Status](https://github.com/JamesWoolfenden/terraform-gcp-helm/workflows/Verify%20and%20Bump/badge.svg?branch=master)](https://github.com/JamesWoolfenden/terraform-gcp-helm) [![Latest Release](https://img.shields.io/github/release/JamesWoolfenden/terraform-gcp-helm.svg)](https://github.com/JamesWoolfenden/terraform-gcp-helm/releases/latest)
+# terraform-gcp-helmrepo [![Build Status](https://github.com/JamesWoolfenden/terraform-gcp-helmrepo/workflows/Verify%20and%20Bump/badge.svg?branch=master)](https://github.com/JamesWoolfenden/terraform-gcp-helmrepo) [![Latest Release](https://img.shields.io/github/release/JamesWoolfenden/terraform-gcp-helmrepo.svg)](https://github.com/JamesWoolfenden/terraform-gcp-helmrepo/releases/latest)
 
 Terraform module - see example for a basic implementation, to create a Helm repo in GCP storage.
 You'll need to know the rules packages, you want the example shows you how to set up a template that has all the basic rules.
@@ -43,8 +43,8 @@ module "helm" {
 
 | Name | Description |
 |------|-------------|
-| bucket | The Url of the statebucket |
-| url | The Url of the statebucket |
+| bucket | The repo bucket |
+| url | The Url of the helm repo |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
@@ -58,13 +58,13 @@ Check out these related projects.
 
 **Got a question?**
 
-File a GitHub [issue](https://github.com/JamesWoolfenden/terraform-gcp-helm/issues).
+File a GitHub [issue](https://github.com/JamesWoolfenden/terraform-gcp-helmrepo/issues).
 
 ## Contributing
 
 ### Bug Reports & Feature Requests
 
-Please use the [issue tracker](https://github.com/JamesWoolfenden/terraform-gcp-helm/issues) to report any bugs or file feature requests.
+Please use the [issue tracker](https://github.com/JamesWoolfenden/terraform-gcp-helmrepo/issues) to report any bugs or file feature requests.
 
 ## Copyrights
 
@@ -106,11 +106,11 @@ under the License.
 [linkedin]: https://www.linkedin.com/company/slalom-consulting/
 [twitter]: https://twitter.com/Slalom
 
-[share_twitter]: https://twitter.com/intent/tweet/?text=terraform-gcp-helm&url=https://github.com/JamesWoolfenden/terraform-gcp-helm
-[share_linkedin]: https://www.linkedin.com/shareArticle?mini=true&title=terraform-gcp-helm&url=https://github.com/JamesWoolfenden/terraform-gcp-helm
-[share_reddit]: https://reddit.com/submit/?url=https://github.com/JamesWoolfenden/terraform-gcp-helm
-[share_facebook]: https://facebook.com/sharer/sharer.php?u=https://github.com/JamesWoolfenden/terraform-gcp-helm
-[share_email]: mailto:?subject=terraform-gcp-helm&body=https://github.com/JamesWoolfenden/terraform-gcp-helm
+[share_twitter]: https://twitter.com/intent/tweet/?text=terraform-gcp-helmrepo&url=https://github.com/JamesWoolfenden/terraform-gcp-helmrepo
+[share_linkedin]: https://www.linkedin.com/shareArticle?mini=true&title=terraform-gcp-helmrepo&url=https://github.com/JamesWoolfenden/terraform-gcp-helmrepo
+[share_reddit]: https://reddit.com/submit/?url=https://github.com/JamesWoolfenden/terraform-gcp-helmrepo
+[share_facebook]: https://facebook.com/sharer/sharer.php?u=https://github.com/JamesWoolfenden/terraform-gcp-helmrepo
+[share_email]: mailto:?subject=terraform-gcp-helmrepo&body=https://github.com/JamesWoolfenden/terraform-gcp-helmrepo
 
 ### Notes
 
