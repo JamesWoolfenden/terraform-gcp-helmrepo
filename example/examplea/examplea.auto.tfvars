@@ -6,5 +6,3 @@ binding = {
   role    = "roles/storage.objectViewer"
   members = ["user:user@example.com"]
 }
-
-location = "US"

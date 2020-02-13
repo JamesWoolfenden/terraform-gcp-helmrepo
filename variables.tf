@@ -9,9 +9,11 @@ variable bucket_name {
 }
 
 variable project {
-  type = string
+  description = "The GCP project"
+  type        = string
 }
 
-variable binding {}
-
-variable location {}
+variable binding {
+  description = "Permissions to set on the bucket"
+  type        = map
+}

@@ -16,9 +16,12 @@ Include this repository as a module in your existing Terraform code as **module.
 
 ```terraform
 module "helm" {
-  source        = "JamesWoolfenden/helm/gcp"
-  version       = "0.0.2"
-  common_tags   = var.common_tags
+  source      = "JamesWoolfenden/helm/gcp"
+  version     = "0.0.2"
+  binding     = var.binding
+  common_tags = var.common_tags
+  project     = var.project
+  bucket_name = var.bucket_name
 }
 ```
 
@@ -33,11 +36,10 @@ module "helm" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:-----:|
-| binding | n/a | `any` | n/a | yes |
+| binding | Permissions to set on the bucket | `map` | n/a | yes |
 | bucket\_name | The name of the bucket | `string` | n/a | yes |
 | common\_tags | This is a map type for applying tags on resources | `map` | n/a | yes |
-| location | n/a | `any` | n/a | yes |
-| project | n/a | `string` | n/a | yes |
+| project | The GCP project | `string` | n/a | yes |
 
 ## Outputs
 

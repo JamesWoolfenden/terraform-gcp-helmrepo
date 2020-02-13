@@ -13,5 +13,3 @@ variable project {
 }
 
 variable binding {}
-
-variable location {}
