@@ -31,28 +31,6 @@ module "helm" {
 ```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Providers
-
-| Name | Version |
-|------|---------|
-| google | n/a |
-
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
-| binding | Permissions to set on the bucket | `map` | n/a | yes |
-| bucket\_name | The name of the bucket | `string` | n/a | yes |
-| common\_tags | This is a map type for applying tags on resources | `map` | n/a | yes |
-| project | The GCP project | `string` | n/a | yes |
-
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| bucket | The repo bucket |
-| url | The Url of the helm repo |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Related Projects

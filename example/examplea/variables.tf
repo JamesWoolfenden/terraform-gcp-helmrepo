@@ -1,15 +1,16 @@
 variable "common_tags" {
   description = "This is a map type for applying tags on resources"
-  type        = map
+  type        = map(any)
 }
 
-variable bucket_name {
+variable "bucket_name" {
   type        = string
   description = "The name of the bucket"
 }
 
-variable project {
+variable "project" {
   type = string
 }
 
-variable binding {}
+variable "binding" {
+}
