@@ -1,11 +1,9 @@
-[![Slalom][logo]](https://slalom.com)
-
 # terraform-gcp-helmrepo
 
 [![Build Status](https://github.com/JamesWoolfenden/terraform-gcp-helmrepo/workflows/Verify%20and%20Bump/badge.svg?branch=master)](https://github.com/JamesWoolfenden/terraform-gcp-helmrepo)
 [![Latest Release](https://img.shields.io/github/release/JamesWoolfenden/terraform-gcp-helmrepo.svg)](https://github.com/JamesWoolfenden/terraform-gcp-helmrepo/releases/latest)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![pre-commit](https://img.shields.io/badge/checkov-verified-brightgreen)](https://www.checkov.io/)
+[![checkov](https://img.shields.io/badge/checkov-verified-brightgreen)](https://www.checkov.io/)
 
 Terraform module - see example for a basic implementation, to create a Helm repo in GCP storage.
 You'll need to know the rules packages, you want the example shows you how to set up a template that has all the basic rules.
@@ -31,6 +29,44 @@ module "helm" {
 ```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_google"></a> [google](#provider\_google) | n/a |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_helmrepo"></a> [helmrepo](#module\_helmrepo) | JamesWoolfenden/storage/gcp | 0.2.5 |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [google_storage_bucket_object.index](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
+| [google_storage_bucket_object.robots](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_binding"></a> [binding](#input\_binding) | Permissions to set on the bucket | `any` | n/a | yes |
+| <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The name of the bucket | `string` | n/a | yes |
+| <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | This is a map type for applying tags on resources | `map(any)` | n/a | yes |
+| <a name="input_project"></a> [project](#input\_project) | The GCP project | `string` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_bucket"></a> [bucket](#output\_bucket) | The repo bucket |
+| <a name="output_url"></a> [url](#output\_url) | The Url of the helm repo |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Related Projects
@@ -53,7 +89,7 @@ Please use the [issue tracker](https://github.com/JamesWoolfenden/terraform-gcp-
 
 ## Copyrights
 
-Copyright © 2019-2020 [Slalom, LLC](https://slalom.com)
+Copyright © 2019-2021 James Woolfenden
 
 ## License
 
@@ -62,34 +98,31 @@ Copyright © 2019-2020 [Slalom, LLC](https://slalom.com)
 See [LICENSE](LICENSE) for full details.
 
 Licensed to the Apache Software Foundation (ASF) under one
-or more contributor license agreements.  See the NOTICE file
+or more contributor license agreements. See the NOTICE file
 distributed with this work for additional information
-regarding copyright ownership.  The ASF licenses this file
+regarding copyright ownership. The ASF licenses this file
 to you under the Apache License, Version 2.0 (the
 "License"); you may not use this file except in compliance
-with the License.  You may obtain a copy of the License at
+with the License. You may obtain a copy of the License at
 
 <https://www.apache.org/licenses/LICENSE-2.0>
 
 Unless required by applicable law or agreed to in writing,
 software distributed under the License is distributed on an
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied.  See the License for the
+KIND, either express or implied. See the License for the
 specific language governing permissions and limitations
 under the License.
 
 ### Contributors
 
-[![James Woolfenden][jameswoolfenden_avatar]][jameswoolfenden_homepage]<br/>[James Woolfenden][jameswoolfenden_homepage]
+[![James Woolfenden][jameswoolfenden_avatar]][jameswoolfenden_homepage]<br/>[James Woolfenden][jameswoolfenden_homepage] |
 
 [jameswoolfenden_homepage]: https://github.com/jameswoolfenden
 [jameswoolfenden_avatar]: https://github.com/jameswoolfenden.png?size=150
-
-[logo]: https://gist.githubusercontent.com/JamesWoolfenden/5c457434351e9fe732ca22b78fdd7d5e/raw/15933294ae2b00f5dba6557d2be88f4b4da21201/slalom-logo.png
-[website]: https://slalom.com
 [github]: https://github.com/jameswoolfenden
-[linkedin]: https://www.linkedin.com/company/slalom-consulting/
-[twitter]: https://twitter.com/Slalom
+[linkedin]: https://www.linkedin.com/in/jameswoolfenden/
+[twitter]: https://twitter.com/JimWoolfenden
 
 [share_twitter]: https://twitter.com/intent/tweet/?text=terraform-gcp-helmrepo&url=https://github.com/JamesWoolfenden/terraform-gcp-helmrepo
 [share_linkedin]: https://www.linkedin.com/shareArticle?mini=true&title=terraform-gcp-helmrepo&url=https://github.com/JamesWoolfenden/terraform-gcp-helmrepo
