@@ -43,7 +43,7 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_helmrepo"></a> [helmrepo](#module\_helmrepo) | JamesWoolfenden/storage/gcp | v0.3.34 |
+| <a name="module_storage"></a> [storage](#module\_storage) | JamesWoolfenden/storage/gcp | v0.3.34 |
 
 ## Resources
 

@@ -1,9 +1,9 @@
 output "url" {
   description = "The Url of the helm repo"
-  value       = module.helmrepo.url
+  value       = module.storage.url
 }
 
 output "bucket" {
   description = "The repo bucket"
-  value       = module.helmrepo.bucket
+  value       = module.storage.bucket
 }

@@ -13,4 +13,8 @@ variable "project" {
 }
 
 variable "binding" {
+  type = object({
+    binding_members = list(string)
+    binding_role    = string
+  })
 }

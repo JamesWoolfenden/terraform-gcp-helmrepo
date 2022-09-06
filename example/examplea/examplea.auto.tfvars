@@ -3,6 +3,6 @@ common_tags = {
 bucket_name = "helm-charts"
 project     = "pike"
 binding = {
-  role    = "roles/storage.objectViewer"
-  members = ["user:user@example.com"]
+  binding_role    = "roles/storage.objectViewer"
+  binding_members = ["user:user@example.com"]
 }
