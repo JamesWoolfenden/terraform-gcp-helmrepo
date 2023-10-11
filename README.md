@@ -37,13 +37,13 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | 5.1.0 |
+| <a name="provider_google"></a> [google](#provider\_google) | n/a |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_storage"></a> [storage](#module\_storage) | git::https://github.com/JamesWoolfenden/terraform-gcp-storage.git | 519f95b1e535157bd0c60f4692ede627061a11de |
+| <a name="module_storage"></a> [storage](#module\_storage) | git::https://github.com/JamesWoolfenden/terraform-gcp-storage.git | 519f95b |
 
 ## Resources
 
