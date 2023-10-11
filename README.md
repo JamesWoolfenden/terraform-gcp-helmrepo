@@ -37,13 +37,13 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | n/a |
+| <a name="provider_google"></a> [google](#provider\_google) | 5.1.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_storage"></a> [storage](#module\_storage) | JamesWoolfenden/storage/gcp | v0.3.34 |
+| <a name="module_storage"></a> [storage](#module\_storage) | git::https://github.com/JamesWoolfenden/terraform-gcp-storage.git | 519f95b1e535157bd0c60f4692ede627061a11de |
 
 ## Resources
 
@@ -51,6 +51,7 @@ No requirements.
 |------|------|
 | [google_storage_bucket_object.index](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
 | [google_storage_bucket_object.robots](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
+| [google_project.pike](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/project) | data source |
 
 ## Inputs
 
@@ -81,6 +82,7 @@ resource "google_project_iam_custom_role" "terraform_pike" {
   title       = "terraform_pike"
   description = "A user with least privileges"
   permissions = [
+    "resourcemanager.projects.get",
     "storage.buckets.create",
     "storage.buckets.delete",
     "storage.buckets.get",
