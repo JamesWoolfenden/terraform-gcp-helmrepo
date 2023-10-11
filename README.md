@@ -59,7 +59,6 @@ No requirements.
 | <a name="input_binding"></a> [binding](#input\_binding) | Permissions to set on the bucket | `any` | n/a | yes |
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The name of the bucket | `string` | n/a | yes |
 | <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | This is a map type for applying tags on resources | `map(any)` | n/a | yes |
-| <a name="input_project"></a> [project](#input\_project) | The GCP project | `string` | n/a | yes |
 
 ## Outputs
 
@@ -75,10 +74,11 @@ No requirements.
 The Terraform resource required is:
 
 ```golang
-resource "google_project_iam_custom_role" "terraformXVlBzgba" {
-  project     = "examplea"
+
+resource "google_project_iam_custom_role" "terraform_pike" {
+  project     = "pike"
   role_id     = "terraform_pike"
-  title       = "terraformXVlBzgba"
+  title       = "terraform_pike"
   description = "A user with least privileges"
   permissions = [
     "storage.buckets.create",
@@ -92,6 +92,7 @@ resource "google_project_iam_custom_role" "terraformXVlBzgba" {
     "storage.objects.get"
   ]
 }
+
 
 ```
 <!-- END OF PRE-COMMIT-PIKE DOCS HOOK -->
