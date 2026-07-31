@@ -1,9 +1,10 @@
+# holden:ignore:HLD_TF_004
 terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "7.30.0"
+      version = "7.42.0"
     }
   }
-  required_version = ">= 1.3.5"
+  required_version = ">= 1.5.0"
 }

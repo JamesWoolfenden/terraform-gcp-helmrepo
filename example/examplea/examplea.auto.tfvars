@@ -1,5 +1,3 @@
-common_tags = {
-"createdby" = "Terraform" }
 bucket_name = "helm-charts"
 binding = {
   binding_role    = "roles/storage.objectViewer"

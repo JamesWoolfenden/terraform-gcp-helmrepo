@@ -20,10 +20,7 @@ Include this repository as a module in your existing Terraform code as **module.
 ```terraform
 module "helm" {
   source      = "JamesWoolfenden/helm/gcp"
-  version     = "0.0.2"
   binding     = var.binding
-  common_tags = var.common_tags
-  project     = var.project
   bucket_name = var.bucket_name
 }
 ```
@@ -31,35 +28,38 @@ module "helm" {
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+| ---- | ------- |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | 7.42.0 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_google"></a> [google](#provider\_google) | n/a |
+| <a name="provider_google"></a> [google](#provider\_google) | 7.42.0 |
 
 ## Modules
 
 | Name | Source | Version |
 | ---- | ------ | ------- |
-| <a name="module_storage"></a> [storage](#module\_storage) | git::https://github.com/JamesWoolfenden/terraform-gcp-storage.git | 519f95b |
+| <a name="module_storage"></a> [storage](#module\_storage) | git::https://github.com/JamesWoolfenden/terraform-gcp-storage.git | 1739dfd1cc78c218fd744bbecf7d4c1b4eeef025 |
 
 ## Resources
 
 | Name | Type |
 | ---- | ---- |
-| [google_storage_bucket_object.index](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
-| [google_storage_bucket_object.robots](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
-| [google_project.pike](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/project) | data source |
+| [google_storage_bucket_object.index](https://registry.terraform.io/providers/hashicorp/google/7.42.0/docs/resources/storage_bucket_object) | resource |
+| [google_storage_bucket_object.robots](https://registry.terraform.io/providers/hashicorp/google/7.42.0/docs/resources/storage_bucket_object) | resource |
+| [google_project.pike](https://registry.terraform.io/providers/hashicorp/google/7.42.0/docs/data-sources/project) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
-| <a name="input_binding"></a> [binding](#input\_binding) | Permissions to set on the bucket | `any` | n/a | yes |
+| <a name="input_binding"></a> [binding](#input\_binding) | Permissions to set on the bucket | <pre>object({<br/>    binding_members = list(string)<br/>    binding_role    = string<br/>  })</pre> | n/a | yes |
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The name of the bucket | `string` | n/a | yes |
-| <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | This is a map type for applying tags on resources | `map(any)` | n/a | yes |
+| <a name="input_kms_key_name"></a> [kms\_key\_name](#input\_kms\_key\_name) | KMS crypto key resource ID to encrypt the index.yaml/robots.txt objects with. The caller is responsible for provisioning the key and granting the project's GCS service agent roles/cloudkms.cryptoKeyEncrypterDecrypter on it. | `string` | n/a | yes |
 
 ## Outputs
 
@@ -75,7 +75,7 @@ No requirements.
 The Terraform resource required is:
 
 ```golang
-
+# apply role
 resource "google_project_iam_custom_role" "terraform_pike" {
   project     = "pike-477416"
   role_id     = "terraform_pike"
@@ -92,6 +92,21 @@ resource "google_project_iam_custom_role" "terraform_pike" {
     "storage.objects.create",
     "storage.objects.delete",
     "storage.objects.get",
+    "storage.objects.list"
+  ]
+}
+
+# plan role
+resource "google_project_iam_custom_role" "terraform_pike_plan" {
+  project     = "pike-477416"
+  role_id     = "terraform_pike_plan"
+  title       = "terraform_pike_plan"
+  description = "A user with least privileges"
+  permissions = [
+    "resourcemanager.organizations.get",
+    "resourcemanager.projects.get",
+    "storage.buckets.get",
+    "storage.buckets.getIamPolicy",
     "storage.objects.list"
   ]
 }

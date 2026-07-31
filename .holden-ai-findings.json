@@ -1,0 +1,48 @@
+{
+  "findings": [
+    {
+      "confidence": "medium",
+      "explanation": "module.helmrepo.tf:7 passes `log_bucket = \"\"` to the external terraform-gcp-storage module (pinned at ref 1739dfd1cc78c218fd744bbecf7d4c1b4eeef025). holden's deterministic scan can't see into that module's resource graph \u2014 it lives in another repo \u2014 but the parameter name and this author's other storage modules make it unambiguous: an empty log_bucket disables GCS access logging on the bucket that this module creates and serves publicly (via the caller-supplied `binding` IAM grant). This bucket hosts a Helm chart repository intended for external/public consumption (hence the accompanying robots.txt), so there is no audit trail of who fetched or attempted to fetch chart artifacts, and no way to detect abuse or enumeration. Because `log_bucket` is hardcoded rather than exposed as a variable on this module, no caller can turn logging on without forking the module.",
+      "file": "module.helmrepo.tf",
+      "first_seen": "2026-07-31",
+      "fixable": false,
+      "id": "HOLDEN_AI_001",
+      "last_seen": "2026-07-31",
+      "line": 7,
+      "principle": "logging-and-monitoring",
+      "related_resources": [
+        "google_storage_bucket_object.index",
+        "google_storage_bucket_object.robots"
+      ],
+      "remediation": "Add a `log_bucket` (or `enable_access_logging` + destination) input variable on this module, default to the current empty-string behavior for backward compatibility, and document that production/public deployments should set it to a real log sink bucket.",
+      "resource": "module.storage",
+      "severity": "MEDIUM",
+      "status": "open",
+      "suppression_reason": null,
+      "title": "Bucket access logging is explicitly disabled via a hardcoded empty log_bucket, with no way for callers to turn it on"
+    },
+    {
+      "confidence": "high",
+      "explanation": "The file's entire content is the single line `\u201cUser-Agent: *nDisallow: /\u201d` \u2014 curly/smart quotes wrap the whole thing, and there is a literal letter `n` where the newline between `User-Agent: *` and `Disallow: /` should be, instead of an actual line break. No crawler will parse this as a valid robots.txt directive (the quote characters aren't part of robots.txt syntax, and `*nDisallow:` reads as one token). The resource whose sole purpose is to keep this publicly-served Helm chart bucket out of search results is therefore silently non-functional \u2014 it uploads successfully and passes any deterministic check for \"a robots.txt object exists,\" but provides none of the intended crawl-blocking effect.",
+      "file": "template/robots.txt",
+      "first_seen": "2026-07-31",
+      "fix": "User-Agent: *\nDisallow: /\n",
+      "fixable": true,
+      "id": "HOLDEN_AI_002",
+      "last_seen": "2026-07-31",
+      "line": 1,
+      "principle": "governance",
+      "related_resources": [],
+      "remediation": "Replace template/robots.txt with plain ASCII, one directive per line: `User-Agent: *` followed by a real newline, then `Disallow: /`.",
+      "resource": "google_storage_bucket_object.robots",
+      "severity": "LOW",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "robots.txt content is corrupted and will not actually disallow crawling as intended"
+    }
+  ],
+  "scan_date": "2026-07-31T19:40:00Z",
+  "scan_path": ".",
+  "suggested_policies": [],
+  "suggested_suppressions": []
+}

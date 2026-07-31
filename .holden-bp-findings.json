@@ -1,0 +1,113 @@
+{
+  "findings": [
+    {
+      "confidence": "high",
+      "explanation": "Both objects set `bucket = var.bucket_name`, a plain string literal, instead of referencing `module.storage.bucket`. Terraform's dependency graph is built from resource references, not shared literal values, so there is no implicit edge from these objects to `module.storage` (module.helmrepo.tf:1). On a first-time apply into an empty project, Terraform is free to schedule the object uploads in parallel with (or before) the bucket creation, causing a 404/`notFound` failure. It happens to work today only because the bucket already exists from a prior apply.",
+      "file": "google_storage_bucket_object.index.tf",
+      "first_seen": "2026-07-31",
+      "fix": "resource \"google_storage_bucket_object\" \"index\" {\n  name   = \"index.yaml\"\n  source = \"${path.module}/template/index.yaml\"\n  bucket = module.storage.bucket\n}\n",
+      "fixable": true,
+      "id": "HOLDEN_BP_001",
+      "last_seen": "2026-07-31",
+      "line": 4,
+      "principle": "reliability",
+      "remediation": "Reference the module output instead of the raw variable so Terraform infers the dependency: `bucket = module.storage.bucket` in both google_storage_bucket_object.index.tf and google_storage_bucket_object.robots.tf, or add an explicit `depends_on = [module.storage]` to each resource.",
+      "resource": "google_storage_bucket_object.index, google_storage_bucket_object.robots",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "title": "Bucket objects are not wired to the bucket-creating module, risking apply-order races"
+    },
+    {
+      "confidence": "medium",
+      "explanation": "This object is the Helm repository index (`helm repo index`), which is expected to change every time a chart is published. Without an explicit `cache_control`, GCS applies its default caching behaviour for publicly-readable objects (public-read ACLs get ~1 hour of edge/browser caching by default). Consumers running `helm repo update` shortly after a new chart is published can keep resolving the previous index.yaml until the cache expires, silently masking new releases.",
+      "file": "google_storage_bucket_object.index.tf",
+      "first_seen": "2026-07-31",
+      "fix": "resource \"google_storage_bucket_object\" \"index\" {\n  name          = \"index.yaml\"\n  source        = \"${path.module}/template/index.yaml\"\n  bucket        = module.storage.bucket\n  cache_control = \"no-cache, max-age=0\"\n}\n",
+      "fixable": true,
+      "id": "HOLDEN_BP_002",
+      "last_seen": "2026-07-31",
+      "line": 1,
+      "principle": "reliability",
+      "remediation": "Set an explicit cache_control on the index object so clients always revalidate, e.g. `cache_control = \"no-cache, max-age=0\"`.",
+      "resource": "google_storage_bucket_object.index",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "title": "Helm index.yaml has no cache_control, so Helm clients can see a stale chart index"
+    },
+    {
+      "confidence": "high",
+      "explanation": "The README's copy-paste usage block passes `project = var.project`, but variables.tf only declares `bucket_name` and `binding` \u2014 there is no `project` input. The module itself sources the project from `data.google_project.pike` (module.helmrepo.tf:3, module.helmrepo.tf:10), not a variable. A new consumer following the README verbatim gets an immediate `An argument named \"project\" is not expected here` validation error.",
+      "file": "README.md",
+      "first_seen": "2026-07-31",
+      "fix": "module \"helm\" {\n  source      = \"JamesWoolfenden/helm/gcp\"\n  binding     = var.binding\n  bucket_name = var.bucket_name\n}\n",
+      "fixable": true,
+      "id": "HOLDEN_BP_003",
+      "last_seen": "2026-07-31",
+      "line": 22,
+      "principle": "maintainability",
+      "remediation": "Remove the `project` line from the README example (and drop `version = \"0.0.2\"` if that's also stale), matching the actual two-variable interface shown in example/examplea/module.helmrepo.tf.",
+      "resource": "module \"helm\" (README example)",
+      "severity": "LOW",
+      "status": "fixed",
+      "title": "README usage example references a `project` variable the module doesn't declare"
+    },
+    {
+      "confidence": "high",
+      "explanation": "Root variables.tf types `binding` as `map(any)`, so Terraform performs no compile-time validation of its shape. example/examplea/variables.tf:11-15 declares the same conceptual variable as `object({ binding_members = list(string), binding_role = string })`. Consumers who use the root module directly (not through the example) get no type checking on `binding_members`/`binding_role` and can pass a malformed map that only fails deep inside the child `storage` module.",
+      "file": "variables.tf",
+      "first_seen": "2026-07-31",
+      "fix": "variable \"binding\" {\n  description = \"Permissions to set on the bucket\"\n  type = object({\n    binding_members = list(string)\n    binding_role    = string\n  })\n  validation {\n    condition     = length(keys(var.binding)) > 0\n    error_message = \"binding must contain at least one permission entry.\"\n  }\n}\n",
+      "fixable": true,
+      "id": "HOLDEN_BP_004",
+      "last_seen": "2026-07-31",
+      "line": 11,
+      "principle": "maintainability",
+      "remediation": "Type the root `binding` variable the same way the example does: `object({ binding_members = list(string), binding_role = string })`.",
+      "resource": "variable.binding",
+      "severity": "LOW",
+      "status": "fixed",
+      "title": "Root `binding` variable is weakly typed (map(any)) while the example redeclares it as a strict object"
+    },
+    {
+      "confidence": "high",
+      "explanation": "`log_bucket = \"\"` is a literal passed straight through to the child storage module. There is no corresponding input variable on this module, so any consumer who wants access logging on the helm-chart bucket has to fork or patch the module rather than set a variable.",
+      "file": "module.helmrepo.tf",
+      "first_seen": "2026-07-31",
+      "fixable": false,
+      "id": "HOLDEN_BP_005",
+      "last_seen": "2026-07-31",
+      "line": 7,
+      "principle": "maintainability",
+      "remediation": "Expose an optional `log_bucket` variable (default `\"\"` to preserve current behaviour) and pass it through instead of hardcoding.",
+      "resource": "module.storage",
+      "severity": "LOW",
+      "status": "open",
+      "title": "log_bucket is hardcoded to empty string with no variable to override it"
+    },
+    {
+      "confidence": "high",
+      "explanation": "There is no terraform{} / required_providers block anywhere in the root module (confirmed by the pre-commit-terraform docs table in README.md, which renders \"No requirements.\" and provider google version \"n/a\"). Only example/examplea/terraform.tf pins `google = 7.42.0`. Without a constraint on the module itself, nothing declares which google provider versions this module is known to work with, so a caller could pick an incompatible provider version with no warning from Terraform.",
+      "file": "variables.tf",
+      "first_seen": "2026-07-31",
+      "fix": "# holden:ignore:HLD_TF_004 \u2014 this repo is consumed only as a child module (see example/examplea), backend belongs to the caller\nterraform {\n  required_providers {\n    google = {\n      source  = \"hashicorp/google\"\n      version = \"7.42.0\"\n    }\n  }\n  required_version = \">= 1.5.0\"\n}\n",
+      "fixable": true,
+      "id": "HOLDEN_BP_006",
+      "last_seen": "2026-07-31",
+      "line": 1,
+      "principle": "repeatability",
+      "remediation": "Add a terraform.tf at the root with a required_providers block for `google`, pinned exactly (holden's HLD_TF_022 rejects `>=`/wildcard-style version constraints) and matching the example's `7.42.0` pin. A `# holden:ignore:HLD_TF_004` suppression is needed since this module is consumed only as a child module and never configures its own backend.",
+      "resource": "module (root)",
+      "severity": "LOW",
+      "status": "fixed",
+      "title": "Root module declares no required_providers version constraint"
+    }
+  ],
+  "scan_date": "2026-07-31T19:30:00Z",
+  "scan_path": ".",
+  "suggested_policies": [
+    {
+      "rationale": "google_storage_bucket_object resources commonly get uploaded with no cache_control or content_type, which is invisible in code review but produces real-world staleness/content-type bugs (as seen in HOLDEN_BP_002 here). holden has existing policies for google_storage_bucket_object covering create_before_destroy (HLD_GCP_380) and CMEK (HLD_GCP_427) but nothing on cache_control, so this is a genuine gap, not a duplicate.",
+      "yaml": "id: HLD_GCP_XXX  # run: holden next-id --cloud GCP\nname: GCS bucket objects should set cache_control explicitly\nprinciple: reliability\nseverity: LOW\nrationale: |\n  Without an explicit cache_control, GCS applies its own default caching\n  behaviour to bucket objects, particularly for publicly-readable objects.\n  For any object whose content is expected to change over time (index\n  files, configs, manifests), relying on the platform default can cause\n  clients to silently read stale data for up to an hour.\nremediation: |\n  Set cache_control explicitly based on the object's intended freshness,\n  e.g.:\n    resource \"google_storage_bucket_object\" \"example\" {\n      name          = \"index.yaml\"\n      bucket        = google_storage_bucket.example.name\n      source        = \"index.yaml\"\n      cache_control = \"no-cache, max-age=0\"\n    }\nresources:\n  google_storage_bucket_object:\n    path: cache_control\n    not_null: true\n"
+    }
+  ]
+}
