@@ -7,6 +7,12 @@
 .terraform/
 .terraform
 .plugins
+
+# Lock files belong to applyable root configs, not reusable modules or
+# personal bootstrap dirs — only example/examplea (a real deployable example)
+# keeps one tracked.
+.terraform.lock.hcl
+!example/examplea/.terraform.lock.hcl
 __pycache__/
 .vscode/
 .idea

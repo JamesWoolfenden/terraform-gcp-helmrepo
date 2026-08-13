@@ -56,3 +56,11 @@ repos:
     hooks:
     -   id: ghat-go
     -   id: ghat-go-sift
+-   repo: local
+    hooks:
+    -   id: holden
+        name: holden
+        description: Scan Terraform (and CI/CD config) for policy violations (via locally-installed CLI)
+        entry: holden scan .
+        language: system
+        pass_filenames: false

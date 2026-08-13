@@ -6,4 +6,5 @@ output "url" {
 output "bucket" {
   description = "The repo bucket"
   value       = module.storage.bucket
+  sensitive   = true
 }

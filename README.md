@@ -3,7 +3,6 @@
 [![Build Status](https://github.com/JamesWoolfenden/terraform-gcp-helmrepo/workflows/Verify/badge.svg?branch=master)](https://github.com/JamesWoolfenden/terraform-gcp-helmrepo)
 [![Latest Release](https://img.shields.io/github/release/JamesWoolfenden/terraform-gcp-helmrepo.svg)](https://github.com/JamesWoolfenden/terraform-gcp-helmrepo/releases/latest)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![checkov](https://img.shields.io/badge/checkov-verified-brightgreen)](https://www.checkov.io/)
 
 Terraform module - see example for a basic implementation, to create a Helm repo in GCP storage.
 You'll need to know the rules packages, you want the example shows you how to set up a template that has all the basic rules.
@@ -28,30 +27,27 @@ module "helm" {
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
-| Name | Version |
-| ---- | ------- |
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | 7.42.0 |
+No requirements.
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_google"></a> [google](#provider\_google) | 7.42.0 |
+| <a name="provider_google"></a> [google](#provider\_google) | n/a |
 
 ## Modules
 
 | Name | Source | Version |
 | ---- | ------ | ------- |
-| <a name="module_storage"></a> [storage](#module\_storage) | git::https://github.com/JamesWoolfenden/terraform-gcp-storage.git | 1739dfd1cc78c218fd744bbecf7d4c1b4eeef025 |
+| <a name="module_storage"></a> [storage](#module\_storage) | git::https://github.com/JamesWoolfenden/terraform-gcp-storage.git | e314472e46f4254b711269ee7b8983256ed861b8 |
 
 ## Resources
 
 | Name | Type |
 | ---- | ---- |
-| [google_storage_bucket_object.index](https://registry.terraform.io/providers/hashicorp/google/7.42.0/docs/resources/storage_bucket_object) | resource |
-| [google_storage_bucket_object.robots](https://registry.terraform.io/providers/hashicorp/google/7.42.0/docs/resources/storage_bucket_object) | resource |
-| [google_project.pike](https://registry.terraform.io/providers/hashicorp/google/7.42.0/docs/data-sources/project) | data source |
+| [google_storage_bucket_object.index](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
+| [google_storage_bucket_object.robots](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
+| [google_project.pike](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/project) | data source |
 
 ## Inputs
 
@@ -168,39 +164,3 @@ under the License.
 
 [jameswoolfenden_homepage]: https://github.com/jameswoolfenden
 [jameswoolfenden_avatar]: https://github.com/jameswoolfenden.png?size=150
-
-### Notes
-
-For more details look athe gcp documentation here:
-<https://docs.gcp.amazon.com/helm/latest/userguide/helm_slr.html>
-
-and here:
-<https://docs.gcp.amazon.com/cli/latest/reference/helm/index.html>
-
-Imports
-
-```cli
-terraform import module.helm.gcp_helm_assessment_target.target
-terraform import module.helm.gcp_helm_assessment_target.target arn:gcp:helm:eu-west-1:680235478471:target/0-WXdEI6N4
-terraform import module.helm.gcp_helm_assessment_template.template arn:gcp:helm:eu-west-1:680235478471:target/0-WXdEI6N4/template/0-HWzZC5g2
-
-gcp helm describe-assessment-targets --assessment-target-arns arn:gcp:helm:eu-west-1:680235478471:target/0-WXdEI6N4
-{
-    "assessmentTargets": [
-        {
-            "arn": "arn:gcp:helm:eu-west-1:680235478471:target/0-WXdEI6N4",
-            "name": "Assessment-Target-All-Instances",
-            "resourceGroupArn": "arn:gcp:helm:eu-west-1:680235478471:resourcegroup/0-DIVXsGMP",
-            "createdAt": 1579347554.241,
-            "updatedAt": 1579348640.217
-        }
-    ],
-    "failedItems": {}
-}
-
-gcp helm describe-assessment-templates --assessment-template-arns arn:gcp:helm:eu-west-1:680235478471:target/0-WXdEI6N4/template/0-HWzZC5g2
-
-terraform import module.helm.gcp_cloudwatch_event_rule.helm Amazon_helm_Assessment_0-HWzZC5g2_Id3mgqa
-
-terraform import  module.helm.gcp_cloudwatch_event_target.inspect Amazon_helm_Assessment_0-HWzZC5g2_Id3mgqa/0-WXdEI6N4/template/0-HWzZC5g2
-```

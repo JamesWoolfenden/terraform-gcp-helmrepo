@@ -7,7 +7,7 @@
       "first_seen": "2026-07-31",
       "fixable": false,
       "id": "HOLDEN_AI_001",
-      "last_seen": "2026-07-31",
+      "last_seen": "2026-08-12",
       "line": 7,
       "principle": "logging-and-monitoring",
       "related_resources": [
@@ -19,17 +19,18 @@
       "severity": "MEDIUM",
       "status": "open",
       "suppression_reason": null,
-      "title": "Bucket access logging is explicitly disabled via a hardcoded empty log_bucket, with no way for callers to turn it on"
+      "title": "Bucket access logging is explicitly disabled via a hardcoded empty log_bucket, with no way for callers to turn it on",
+      "unresolved_since": "2026-07-31"
     },
     {
       "confidence": "high",
-      "explanation": "The file's entire content is the single line `\u201cUser-Agent: *nDisallow: /\u201d` \u2014 curly/smart quotes wrap the whole thing, and there is a literal letter `n` where the newline between `User-Agent: *` and `Disallow: /` should be, instead of an actual line break. No crawler will parse this as a valid robots.txt directive (the quote characters aren't part of robots.txt syntax, and `*nDisallow:` reads as one token). The resource whose sole purpose is to keep this publicly-served Helm chart bucket out of search results is therefore silently non-functional \u2014 it uploads successfully and passes any deterministic check for \"a robots.txt object exists,\" but provides none of the intended crawl-blocking effect.",
+      "explanation": "The file's entire content was the single line `\u201cUser-Agent: *nDisallow: /\u201d` \u2014 curly/smart quotes wrapping the whole thing, with a literal letter `n` where the newline should be. Fixed to plain `User-Agent: *` / `Disallow: /` on separate lines.",
       "file": "template/robots.txt",
       "first_seen": "2026-07-31",
       "fix": "User-Agent: *\nDisallow: /\n",
       "fixable": true,
       "id": "HOLDEN_AI_002",
-      "last_seen": "2026-07-31",
+      "last_seen": "2026-08-12",
       "line": 1,
       "principle": "governance",
       "related_resources": [],
@@ -39,9 +40,51 @@
       "status": "fixed",
       "suppression_reason": null,
       "title": "robots.txt content is corrupted and will not actually disallow crawling as intended"
+    },
+    {
+      "confidence": "high",
+      "explanation": "module.helmrepo.tf:2 pins `module.storage` to terraform-gcp-storage ref `1739dfd1` (`v0.4.0`). A local `.terraform/modules/storage` cache from earlier work let holden resolve into that module's actual source this one time, and it fires `HLD_GCP_001` (HIGH, encryption) \u2014 `google_storage_bucket.bucket` has no `encryption` block at all at this ref (confirmed by reading the module's source directly: `google_storage_bucket.bucket.tf` has zero `encryption`/`kms_key_name` wiring, and the `kms_key` variable is fully commented out in `variables.tf`). Under normal operation \u2014 a fresh checkout with no `.terraform` cache, which is how holden's CI-run scan of this repo actually operates \u2014 holden cannot fetch git-sourced module refs at all (\"local module scan failed\", confirmed at the start of this review chain) and silently reports zero findings for this entire subgraph. So this repo's own consumers get an unencrypted-by-CMEK bucket with no warning from any automated scan, even though the same author's terraform-gcp-storage repo already shipped a fix for exactly this at commit `e314472` (tag `v0.4.1`, `encryption { default_kms_key_name = var.kms_key_name }`), one commit past the currently-pinned ref. Since terraform-gcp-helmrepo's own `kms_key_name` variable (variables.tf) is now required with no default, wiring it through to `module.storage.kms_key_name` (which is also required, no default, in v0.4.1) is a direct, non-optional match \u2014 no design conflict this time (the earlier conflict, when this module's own kms_key_name was still optional, is gone now that it's required).",
+      "file": "module.helmrepo.tf",
+      "first_seen": "2026-08-12",
+      "fix": "module \"storage\" {\n  source          = \"git::https://github.com/JamesWoolfenden/terraform-gcp-storage.git?ref=e314472e46f4254b711269ee7b8983256ed861b8\" #v0.4.1\n  project         = data.google_project.pike.name\n  bucket_name     = var.bucket_name\n  binding_members = var.binding.binding_members\n  binding_role    = var.binding.binding_role\n  log_bucket      = \"\"\n  kms_key_name    = var.kms_key_name\n}\n",
+      "fixable": true,
+      "id": "HOLDEN_AI_003",
+      "last_seen": "2026-08-12",
+      "line": 2,
+      "principle": "encryption",
+      "related_resources": [
+        "module.storage"
+      ],
+      "remediation": "Bump module.helmrepo.tf:2 to `ref=e314472e46f4254b711269ee7b8983256ed861b8 #v0.4.1`, add `kms_key_name = var.kms_key_name` to the module.storage block, and mark outputs.tf's `output \"bucket\"` `sensitive = true` (v0.4.1 marks that output sensitive upstream). Note: this also renames the bucket's internal resource address (`google_storage_bucket.bucket` \u2192 `.pike`) and the iam binding gains `count`, so the next real apply will show a destroy+recreate on those two resources \u2014 a one-time, expected state churn from the version bump, not a config error.",
+      "resource": "module.storage.google_storage_bucket.bucket",
+      "severity": "HIGH",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "The bucket this module actually creates has no CMEK \u2014 invisible to holden's normal scan because it can't resolve the git-sourced module reference"
+    },
+    {
+      "confidence": "high",
+      "explanation": "Same root cause and same discovery mechanism as HOLDEN_AI_003: holden fired `HLD_GCP_385` (LOW, backup-and-recovery) against the vendored copy of `google_storage_bucket.bucket` at the pinned `v0.4.0` ref, which has no `soft_delete_policy` block at all. This is invisible to holden's normal (no-module-cache) scan of this repo for the same reason as HOLDEN_AI_003. Unlike the CMEK gap, the fix for this one is unconditional in the upstream module \u2014 `v0.4.1` adds `soft_delete_policy { retention_duration_seconds = 604800 }` directly on the bucket resource with no new variable required, so it's resolved by the exact same version bump as HOLDEN_AI_003, no additional wiring needed.",
+      "file": "module.helmrepo.tf",
+      "first_seen": "2026-08-12",
+      "fix": "See HOLDEN_AI_003 \u2014 same module.storage source bump, no additional change.",
+      "fixable": true,
+      "id": "HOLDEN_AI_004",
+      "last_seen": "2026-08-12",
+      "line": 2,
+      "principle": "backup-and-recovery",
+      "related_resources": [
+        "module.storage"
+      ],
+      "remediation": "Same fix as HOLDEN_AI_003 \u2014 bumping module.helmrepo.tf:2 to the `v0.4.1` ref resolves this automatically, no separate change needed.",
+      "resource": "module.storage.google_storage_bucket.bucket",
+      "severity": "LOW",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "The bucket this module actually creates has no soft-delete retention configured \u2014 same cross-module blind spot as HOLDEN_AI_003"
     }
   ],
-  "scan_date": "2026-07-31T19:40:00Z",
+  "scan_date": "2026-08-12T21:20:00Z",
   "scan_path": ".",
   "suggested_policies": [],
   "suggested_suppressions": []
