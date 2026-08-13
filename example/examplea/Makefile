@@ -15,38 +15,38 @@ all: init plan build
 
 init:
 	$(RM)
-	terraform init -reconfigure -upgrade
+	tofu init -reconfigure -upgrade
 
 plan:
-	terraform plan --out tfplan.binary -refresh=true
+	tofu plan --out tfplan.binary -refresh=true
 
 planned: init
-	terraform plan -out tf.plan
-	terraform show -json tf.plan  > tf.json
+	tofu plan -out tf.plan
+	tofu show -json tf.plan  > tf.json
 
 p:
-	terraform plan -refresh=true
+	tofu plan -refresh=true
 
 apply: build
 
 build:
-	terraform apply -auto-approve
+	tofu apply -auto-approve
 
 convert:
-	terraform show -json tfplan.binary > tfplan.json
+	tofu show -json tfplan.binary > tfplan.json
 
 check: init
-	terraform plan -detailed-exitcode
+	tofu plan -detailed-exitcode
 
 destroy: init
-	terraform destroy -force
+	tofu destroy -force
 
 docs:
 	terraform-docs md . > README.md
 
 target:
 	@read -p "Enter Module to target:" MODULE;
-	terraform apply -target $$MODULE
+	tofu apply -target $$MODULE
 
 purge:
 	$(BLAT)

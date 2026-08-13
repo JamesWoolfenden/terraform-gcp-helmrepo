@@ -1,10 +1,10 @@
 #!/usr/bin/env pwsh
 $ErrorActionPreference ="Stop"
-terraform fmt --recursive
+tofu fmt --recursive
 Push-Location
 Set-Location example/examplea
 Remove-Item .terraform -Recurse -ErrorAction SilentlyContinue
-terraform init -upgrade
-terraform validate
+tofu init -upgrade
+tofu validate
 make valid
 Pop-Location
