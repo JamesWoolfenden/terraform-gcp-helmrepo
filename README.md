@@ -99,7 +99,6 @@ resource "google_project_iam_custom_role" "terraform_pike_plan" {
   title       = "terraform_pike_plan"
   description = "A user with least privileges"
   permissions = [
-    "resourcemanager.organizations.get",
     "resourcemanager.projects.get",
     "storage.buckets.get",
     "storage.buckets.getIamPolicy",
