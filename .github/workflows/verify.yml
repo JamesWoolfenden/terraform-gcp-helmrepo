@@ -18,5 +18,3 @@ jobs:
 # holden:ignore:HLD_CI_017 — org-owned reusable workflow, intentionally tracked at @main to pick up pipeline fixes
   verify:
     uses: JamesWoolfenden/.github/.github/workflows/terraform-verify-gcp.yml@main
-    with:
-      service_account: terraform-gcp-helmrepo@pike-477416.iam.gserviceaccount.com
